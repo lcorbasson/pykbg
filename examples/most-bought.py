@@ -69,17 +69,17 @@ for product_id, quantity in top_product_ids.items():
 
 print("Top products:")
 for product, n in top_products.most_common(5):
-    print("%3dx - %s" % (n, product))
+    print(f"{n:3d}x - {product}")
 print()
 
 print("Top producers:")
 for producer, n in top_producers.most_common(5):
-    print("%3dx - %s" % (n, producer))
+    print(f"{n:3d}x - {producer}")
 print()
 
 print("Top weights:")
 for product, n in top_weights.most_common(5):
-    print("%3d kg - %s" % (n, product))
+    print(f"{n:5.1f} kg - {product}")
 print()
 
 print("Top purchases:")
