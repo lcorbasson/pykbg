@@ -83,6 +83,9 @@ The `UnauthenticatedKbg` constructor doesn’t take any argument.
 #### `get_stores()`
 Get the list of stores (`list` of `dict`s).
 
+#### `get_store(store_id)`
+Get a single store (`dict`).
+
 #### `get_store_availabilities(store_id)`
 Get product availabilities at the given store for the current command window,
 as a map of product ids to units count.
@@ -96,6 +99,14 @@ Note this method is cached; use `force=True` to force the API call.
 #### `get_store_offer_dicts(store_id, force=False)`
 Equivalent of `get_store_offer` that returns lookup `dict`s rather than lists
 of items.
+
+#### `get_store_status(store_id)`
+Return a `dict` describing a store’s status.
+
+* `is_active` (`bool`): is the store active, i.e. are we in the timeframe for
+    orders?
+* `is_full` (`bool`): is the store full, i.e. it can’t take anymore orders?
+* `full_tags` (`str` `list`): what is full? Possible values: `"ORDERS"`, `"SEC"`, `"FRAIS"`
 
 ### Examples
 Create a simple connection:
@@ -189,13 +200,13 @@ if len(known_beers) != len(beers):
 This library uses undocumented API endpoints, so it may break at any time.
 
 ## Notes
-Don’t confuse KBG (Kelbongoo) with [KGB](https://en.wikipedia.org/wiki/KGB).
+Don’t confuse KBG (Kelbongoo) with the [KGB](https://en.wikipedia.org/wiki/KGB).
 
 The Kelbongoo API refers to stores as “locales”, using the first tree letters
 in upper-case as a primary key: `BOR` is Borrégo and `BIC` is Bichat, for
 example.
 
-Prices are given in €uro cents; you need to divide them by 100 to get the
-price in €uro: `"consumer_price": 221` means it’s something that costs €2.21.
+Prices are given in euro cents; you need to divide them by 100 to get the
+price in euro: `"consumer_price": 221` means it’s something that costs €2.21.
 
 Please throttle your requests to respect Kelbongoo’s servers.

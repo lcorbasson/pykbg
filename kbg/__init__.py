@@ -3,7 +3,7 @@
 import json
 import requests
 
-__version__ = "0.0.3"
+__version__ = "0.0.5"
 
 API_ENDPOINT = "https://courses-api.kelbongoo.com"
 
@@ -93,6 +93,15 @@ class UnauthenticatedKbg:
         # The website is French-only.
         return self._request_json("/locales")["locales"]
 
+    def get_store(self, store_id):
+        """
+        Return a dict representing a store. See ``get_stores`` to get all of
+        them.
+        """
+        for store in self.get_stores():
+            if store["code"] == store_id:
+                return store
+
     def get_store_availabilities(self, store_id):
         """
         Return a ``dict`` mapping product ids to their availabilities for
@@ -154,30 +163,30 @@ class UnauthenticatedKbg:
     def get_store_status(self, store_id):
         """
         Return a ``dict`` giving details on the store's status:
-         - is it active? (e.g. we are in the timeframe for orders)
-         - is it full? (e.g. no orders can be taken anymore)
-           - if full, what is full (``"ORDERS"``, ``"SEC"``, ``"FRAIS"``)
+         - ``"is_active"``: is it active? (e.g. we are in the timeframe for
+           orders)
+         - ``"is_full"``: is it full? (e.g. no orders can be taken anymore)
+           - ``"full_tags"``: if full, a collection of tags describing what
+             is full (possible values are ``"ORDERS"``, ``"SEC"``,
+             ``"FRAIS"``).
 
         ``store_id`` must be the three-uppercase-letters code of the store. See
         ``get_stores`` for a list.
         """
         resp = self._request_json("/available", params={"locale": store_id})
-        isActive = False
-        if resp["globalorder"]["status"] == 2:
-            isActive = True
-        isFull = False
-        whatIsFull = None
-        stores = resp["globalorderlocales"]
+        is_active = resp.get("globalorder", {}).get("status") == 2
+        stores = resp.get("globalorderlocales", [])
+
+        closed_tags = []
         for store in stores:
             if store["locale"] == store_id:
-                whatIsFull = store["closed_tags"]
-                if len(whatIsFull) > 0:
-                    isFull = True
+                closed_tags = store["closed_tags"]
+
         return {
-                "isActive": isActive,
-                "isFull": isFull,
-                "whatIsFull": whatIsFull,
-            }
+            "is_active": is_active,
+            "is_full": bool(closed_tags),
+            "full_tags": closed_tags,
+        }
 
 
 class Kbg(UnauthenticatedKbg):

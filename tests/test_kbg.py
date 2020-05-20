@@ -48,6 +48,18 @@ class TestUnauthenticatedKbg(unittest.TestCase):
             got_stores = self.k.get_stores()
         self.assertSequenceEqual(stores, got_stores)
 
+    def test_get_store(self):
+        store1 = {"code": "ABC", "some": "attr1"}
+        store2 = {"code": "DEF", "some": "attr2"}
+        with responses.RequestsMock() as resps:
+            resps.add(responses.GET, k.API_ENDPOINT + "/locales",
+                    json={"locales": [store1, store2]})
+
+            self.assertEqual(store1, self.k.get_store("ABC"))
+            self.assertEqual(store2, self.k.get_store("DEF"))
+            self.assertIsNone(self.k.get_store("GHI"))
+
+
     def test_get_store_availabilities(self):
         store = "XYZ"
         availabilities = {"id1": 1, "id2": 3, "id3": 2000, "id4": 0}
@@ -368,3 +380,40 @@ class TestKbg(unittest.TestCase):
                     {"id": "p2", "product_name": "product 2", "quantity": 2},
                 ],
             }, order)
+
+    def test_get_store_status(self):
+        with responses.RequestsMock() as resps:
+            closed_tags = ["FRAIS", "ORDERS"]
+            availability = {
+                "available": {},
+                "globalorder": {"status": 2},
+                "globalorderlocales": [{
+                    "_id": "abc",
+                    "id": "abc",
+                    "locale": "BIC",
+                    "closed_tags": closed_tags,
+                    "distributions": [],
+                }],
+            }
+
+            resps.add(
+                responses.GET,
+                k.API_ENDPOINT + "/available?locale=BIC",
+                json=availability)
+
+            self.assertEqual({
+                "is_active": True,
+                "is_full": True,
+                "full_tags": closed_tags,
+            }, self.k.get_store_status("BIC"))
+
+            resps.add(
+                responses.GET,
+                k.API_ENDPOINT + "/available?locale=DEF",
+                json={"message": "globalorder-not-found"})
+
+            self.assertEqual({
+                "is_active": False,
+                "is_full": False,
+                "full_tags": [],
+            }, self.k.get_store_status("DEF"))
