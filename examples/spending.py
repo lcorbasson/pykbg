@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: MIT
 
-import configparser
+from configparser import ConfigParser
 from kbg import Kbg
 
 # Load the config file
-config = configparser.ConfigParser()
+config = ConfigParser()
 config.read('parameters.ini')
 
 # Authenticate
