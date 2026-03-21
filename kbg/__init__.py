@@ -74,6 +74,9 @@ class Config:
     def get_email(self):
         return self._config['Authentication']['email']
 
+    def get_favorite_store(self):
+        return self._config['Stores']['favorite']
+
     def get_password(self):
         return self._config['Authentication']['password']
 

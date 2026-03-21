@@ -11,18 +11,24 @@ config = Config()
 k = Kbg.from_config(config)
 
 # Find your beers coverage
-my_store = config['Stores']['favorite']
+my_store = config.get_favorite_store()
 
 offer = k.get_store_offer(my_store)
 
 # Get the id of the family 'Bières' ("Beers")
 beer_family_id = None
-for family in offer["families"]:
-    if family["name"] == "Bières":
-        beer_family_id = family["id"]
-        break
-else:
-    raise Exception("Can't find the beer family! :(")
+
+def find_family(offer, family_name):
+    for family in offer["families"]:
+        if family["name"] == family_name:
+            return family["id"]
+    raise Exception(f"Can't find the {family_name} family! :(")
+
+try:
+    beer_family_id = find_family(offer, "Bières")
+except Exception as e:
+    print(f"{e} -- giving it another try")
+    beer_family_id = find_family(offer, "Boissons") # "Beverages"
 
 # Collect all products in that family
 beers = {}
