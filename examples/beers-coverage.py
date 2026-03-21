@@ -1,16 +1,14 @@
 # -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: MIT
 
-from configparser import ConfigParser
 from more_itertools import unique_everseen
-from kbg import Kbg
+from kbg import Config, Kbg
 
 # Load the config file
-config = ConfigParser()
-config.read('parameters.ini')
+config = Config()
 
 # Authenticate
-k = Kbg(config['Authentication']['email'], config['Authentication']['password'])
+k = Kbg.from_config(config)
 
 # Find your beers coverage
 my_store = config['Stores']['favorite']

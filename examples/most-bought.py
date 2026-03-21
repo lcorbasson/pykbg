@@ -1,16 +1,11 @@
 # -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: MIT
 
-from configparser import ConfigParser
 from more_itertools import unique_everseen
 from kbg import Kbg
 
-# Load the config file
-config = ConfigParser()
-config.read('parameters.ini')
-
-# Authenticate
-k = Kbg(config['Authentication']['email'], config['Authentication']['password'])
+# Authenticate using the config file
+k = Kbg.from_config()
 
 # Print your most-bought products
 from collections import Counter
