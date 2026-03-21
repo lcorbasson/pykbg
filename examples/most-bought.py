@@ -10,6 +10,7 @@ k = Kbg.from_config()
 # Print your most-bought products
 from collections import Counter
 
+top_items_to_show = 5
 top_product_ids = Counter()
 top_products = Counter()
 top_producers = Counter()
@@ -64,22 +65,22 @@ for product_id, quantity in top_product_ids.items():
     top_purchases[product["product_name"]] += quantity * product["consumer_price"]
 
 print("Top products:")
-for product, n in top_products.most_common(5):
+for product, n in top_products.most_common(top_items_to_show):
     print(f"{n:3d}x - {product}")
 print()
 
 print("Top producers:")
-for producer, n in top_producers.most_common(5):
+for producer, n in top_producers.most_common(top_items_to_show):
     print(f"{n:3d}x - {producer}")
 print()
 
 print("Top weights:")
-for product, n in top_weights.most_common(5):
+for product, n in top_weights.most_common(top_items_to_show):
     print(f"{n:5.1f} kg - {product}")
 print()
 
 print("Top purchases:")
-for product, n in top_purchases.most_common(5):
+for product, n in top_purchases.most_common(top_items_to_show):
     amount = n / 100
     print(f"{amount: >7.2f}€ - {product}")
 print()
