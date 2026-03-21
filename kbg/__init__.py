@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
+from configparser import ConfigParser
 import json
+import os
+import platform
 import requests
 
 __version__ = "0.0.5"
@@ -46,6 +49,33 @@ def _fix_order_fields(order):
     order["products"] = _strip_mongodb_ids(
             [_fix_product_fields(p) for p in order.pop("items")])
     return order
+
+
+class Config:
+    def __init__(self, path=None):
+        if path is not None:
+            self._path = path
+        else:
+            if platform.system() == 'Windows':
+                configdir = os.environ.get('APPDATA')
+            else:
+                try:
+                    from xdg import BaseDirectory
+                    configdir = BaseDirectory.xdg_config_home
+                except ModuleNotFoundError:
+                    configdir = os.path.expanduser('~/.config')
+            os.makedirs(configdir, exist_ok=True)
+            self._path = os.path.join(configdir, 'pykbg.ini')
+
+        # Load the config file
+        self._config = ConfigParser()
+        self._config.read(self._path)
+
+    def get_email(self):
+        return self._config['Authentication']['email']
+
+    def get_password(self):
+        return self._config['Authentication']['password']
 
 
 class UnauthenticatedKbg:
@@ -193,7 +223,7 @@ class Kbg(UnauthenticatedKbg):
     """
     Represent a connection to Kelbongoo’s website.
     """
-    def __init__(self, email, password):
+    def __init__(self, email: str, password: str):
         super().__init__()
         self._login(email, password)
 
@@ -203,6 +233,10 @@ class Kbg(UnauthenticatedKbg):
             "password": password,
         })
         self._token = resp["token"]
+
+    @classmethod
+    def from_config(cls, config=Config()):
+        return cls(config.get_email(), config.get_password())
 
     def get_customer_information(self):
         """

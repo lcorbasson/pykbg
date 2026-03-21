@@ -2,14 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 from configparser import ConfigParser
-from kbg import Kbg
+from kbg import Config, Kbg
 
-# Load the config file
-config = ConfigParser()
-config.read('parameters.ini')
-
-# Authenticate
-k = Kbg(config['Authentication']['email'], config['Authentication']['password'])
+# Authenticate using the config file
+k = Kbg.from_config()
 
 # Compute your total spending
 total_spent = 0
