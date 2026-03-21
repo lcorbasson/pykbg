@@ -30,7 +30,7 @@ def get_store_products(store):
     all_products.update(store_products[store])
     return store_products[store]
 
-def get_product(product_id):
+def get_product(product_id, refresh_cache=True):
     global all_stores
     global store_products
     for store in store_products:
@@ -39,9 +39,10 @@ def get_product(product_id):
     if len(store_products) != len(all_stores):
         if len(all_stores) == 0:
             all_stores = tuple(s["code"] for s in k.get_stores())
-        for store in all_stores:
-            get_store_products(store)
-        return get_product(product_id)
+        if refresh_cache:
+            for store in all_stores:
+                get_store_products(store)
+            return get_product(product_id, refresh_cache=False)
     raise KeyError(f"Product ID {product_id} not found in stores {all_stores}")
 
 for order in k.get_all_customer_orders():
