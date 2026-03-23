@@ -15,6 +15,75 @@ BASE_HEADERS = {
     "Content-Type": "application/json",
 }
 
+# This is hard-coded in Kelbongoo's main.js, so probably not available via the API
+_ORDER_STATUSES = [
+    {
+        'code': 0,
+        'description': "La commande a été créée mais pas encore vérifiée.",
+        'name': "created",
+        'title': "créée",
+    },
+    {
+        'code': 1,
+        'description': "La commande a été vérifiée mais pas encore compilée.",
+        'name': "verified",
+        'title': "vérifiée",
+    },
+    {
+        'code': 2,
+        'description': "La commande a été compilée.",
+        'name': "compiled",
+        'title': "compilée",
+    },
+    {
+        'code': 3,
+        'description': "La commande a été receptionnée.",
+        'name': "received",
+        'title': "reçu",
+    },
+    {
+        'code': 4,
+        'description': "Le consommateur n'est pas venu chercher sa commande, "
+            "il a été invité à venir la chercher prochainement. "
+            "Les produits de très courte DLC doivent être retirés.",
+        'name': "waiting",
+        'title': "en attente",
+    },
+    {
+        'code': 5,
+        'description': "Le consommateur n'est pas venu chercher sa commande, "
+            "après la compilation. "
+            "Tous les produits périssables doivent être retirés, "
+            "et les bocaux rajoutés à la boutique.",
+        'name': "abandonned",
+        'title': "abandonnée",
+    },
+    {
+        'code': 6,
+        'description': "La commande a été collectée et payée par le consommateur.",
+        'name': "done",
+        'title': "terminée",
+    },
+    {
+        'code': 7,
+        'description': "Il a eu une erreur avec cette commande.",
+        'name': "error",
+        'title': "erreur",
+    },
+    {
+        'code': 8,
+        'description': "La commande a été annulée avant la compilation.",
+        'name': "cancelled",
+        'title': "annulée",
+    },
+    {
+        'code': 9,
+        'description': "La commande a été fusionnée avec une autre commande.",
+        'name': "merged",
+        'title': "fusionnée",
+    },
+]
+
 
 # Some endpoints return lists of MongoDB objects. We probably don't need the
 # internal ids, so let's strip them.
@@ -48,6 +117,10 @@ def _fix_order_fields(order):
     order["store"] = order.pop("locale")
     order["products"] = _strip_mongodb_ids(
             [_fix_product_fields(p) for p in order.pop("items")])
+    try:
+        order["status_title"] = _ORDER_STATUSES[order["status"]]["title"]
+    except IndexError:
+        order["status_title"] = ""
     return order
 
 
@@ -117,6 +190,12 @@ class UnauthenticatedKbg:
         Return True if this connection has been successfully initiated.
         """
         return self._token is not None
+
+    def get_order_statuses(self):
+        """
+        Return a list of dicts representing the possible statuses of an order.
+        """
+        return _ORDER_STATUSES
 
     def get_stores(self):
         """
