@@ -46,7 +46,7 @@ for order in k.get_all_customer_orders(full=True):
         datetime.fromisoformat(order['distribution_date']).astimezone(ZoneInfo("Europe/Paris")).strftime('%Y-%m-%d %Hh%M'),
         "Kelbongoo " + order['store'],
         order['id'],
-        str(order['status']),
+        f"{order['status']}-{order['status_title']}",
     ])
     receipt = sorted([
         tuple(field_func[field](product[field]) for field in fields)
