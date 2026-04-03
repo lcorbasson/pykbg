@@ -317,7 +317,10 @@ class Kbg(UnauthenticatedKbg):
         self._token = resp["token"]
 
     @classmethod
-    def from_config(cls, config=Config()):
+    def from_config(cls, config=None):
+        if config is None:
+            config = Config()
+
         return cls(config.get_email(), config.get_password())
 
     def get_customer_information(self):
