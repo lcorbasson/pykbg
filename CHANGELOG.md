@@ -1,5 +1,10 @@
 # PyKbg Changelog
 
+## 0.1.0 (unreleased)
+
+* Drop support for Python 3.6
+* Use `uv` to manage the project
+
 ## 0.0.5 (2020/04/21)
 * Add `get_store` as a convenient wrapper around `get_stores` + a filter
 * Fix `get_store_status` when a store is inactive
