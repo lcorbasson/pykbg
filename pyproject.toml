@@ -26,12 +26,14 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 
-[tool.hatch.build.targets.sdist.force-include]
-"kbg/py.typed" = "kbg/py.typed"
+[tool.uv.build-backend]
+module-name = ["kbg"]
+module-root = ""
+source-include = ["kbg/py.typed"]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 120
