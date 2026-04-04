@@ -26,7 +26,7 @@ consumer ([short food supply chain][sfsc]).
 pip3 install kbg
 ```
 
-This requires Python ≥3.5.
+This requires Python ≥3.7.
 
 ## Usage
 Use the `Kbg` class to initiate a connection:

@@ -1,10 +1,9 @@
 # -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: MIT
 
-from configparser import ConfigParser
 from datetime import datetime
 from decimal import Decimal
-from kbg import Config, Kbg
+from kbg import Kbg
 from numbers import Number
 from zoneinfo import ZoneInfo
 
@@ -15,7 +14,7 @@ k = Kbg.from_config()
 ##
 # Generate receipts
 ##
-receipts = dict()
+receipts = {}
 fields = [
     'producer_name',
     'product_name',
@@ -57,9 +56,8 @@ for order in k.get_all_customer_orders(full=True):
     # Align numeric fields to the right
     for idx, field in enumerate(fields):
         field_lengths[idx] = max([field_lengths[idx]] + [len(str(line[idx])) for line in receipt])
-        if len(order['products']) > 0:
-            if isinstance(order['products'][0][field], Number):
-                field_justs[idx] = ' >'
+        if len(order['products']) > 0 and isinstance(order['products'][0][field], Number):
+            field_justs[idx] = ' >'
 
 # Finalize field formatting
 field_formats = ['{:' + field_justs[idx] + str(field_lengths[idx]) + '}' + field_units[idx] for idx, field in enumerate(fields)]
@@ -77,6 +75,6 @@ def layout(receipt, field_formats):
 # Export receipts
 for receipt_name in sorted(receipts.keys()):
     receipt = receipts[receipt_name]
-    with open(receipt_name + '.txt', 'wt') as receipt_file:
+    with open(receipt_name + '.txt', 'w') as receipt_file:
         receipt_file.write(layout(receipt, field_formats))
 

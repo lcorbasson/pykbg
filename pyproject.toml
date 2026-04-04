@@ -2,6 +2,8 @@
 name = "pykbg"
 version = "0.0.1"
 authors = [{ name = "Baptiste Fontaine", email = "b@ptistefontaine.fr" }]
+description = "Python wrapper for the Kelbongoo website"
+url = "https://github.com/bfontaine/pykbg"
 license = "MIT"
 requires-python = ">=3.7,<3.15"
 dependencies = [
@@ -14,7 +16,34 @@ dev = [
     "types-requests",
     "pytest>=7,<10",
     "ruff>=0.15.5",
+    "pytest-cov>=4.1.0",
 ]
 
 [tool.uv]
 package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py37"
+[tool.ruff.lint]
+select = [
+    "D", "PERF", "W", "F", "UP",
+    "A", "ASYNC", "B", "C4", "PIE800", "PT", "SIM", "SLOT", "YTT",
+
+    "PLE", "FURB", "PLC0207",
+]
+ignore = [
+    "D104", # "Missing docstring in public package"
+    "D107", # "Missing docstring in `__init__`"
+    "D205", # "1 blank line required between summary line and description",
+    "D212",
+    "D400", # "First line should end with a period"
+    "D401", # "First line of docstring should be in imperative mood"
+    "D415", # "First line should end with a period, question mark, or exclamation point"
+
+    "E501", # line too long
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["D"]
+"conftest.py" = ["D"]

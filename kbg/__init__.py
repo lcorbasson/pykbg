@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 
-from configparser import ConfigParser
 import json
 import os
 import platform
+from configparser import ConfigParser
+
 import requests
 
 __version__ = "0.0.5"
@@ -44,17 +45,17 @@ _ORDER_STATUSES = [
     {
         'code': 4,
         'description': "Le consommateur n'est pas venu chercher sa commande, "
-            "il a été invité à venir la chercher prochainement. "
-            "Les produits de très courte DLC doivent être retirés.",
+                       "il a été invité à venir la chercher prochainement. "
+                       "Les produits de très courte DLC doivent être retirés.",
         'name': "waiting",
         'title': "en attente",
     },
     {
         'code': 5,
         'description': "Le consommateur n'est pas venu chercher sa commande, "
-            "après la compilation. "
-            "Tous les produits périssables doivent être retirés, "
-            "et les bocaux rajoutés à la boutique.",
+                       "après la compilation. "
+                       "Tous les produits périssables doivent être retirés, "
+                       "et les bocaux rajoutés à la boutique.",
         'name': "abandonned",
         'title': "abandonnée",
     },
@@ -112,11 +113,12 @@ def _fix_product_fields(product):
         product["id"] = product.pop("producerproduct_id")
     return product
 
+
 def _fix_order_fields(order):
     order = _strip_mongodb_id(order)
     order["store"] = order.pop("locale")
     order["products"] = _strip_mongodb_ids(
-            [_fix_product_fields(p) for p in order.pop("items")])
+        [_fix_product_fields(p) for p in order.pop("items")])
     try:
         order["status_title"] = _ORDER_STATUSES[order["status"]]["title"]
     except IndexError:
@@ -125,18 +127,19 @@ def _fix_order_fields(order):
 
 
 class Config:
+    """Configuration."""
+
     def __init__(self, path=None):
         if path is not None:
             self._path = path
         else:
             if platform.system() == 'Windows':
-                configdir = os.environ.get('APPDATA')
+                configdir = os.environ['APPDATA']
             else:
-                try:
-                    from xdg import BaseDirectory
-                    configdir = BaseDirectory.xdg_config_home
-                except ModuleNotFoundError:
-                    configdir = os.path.expanduser('~/.config')
+                configdir = os.path.expanduser(
+                    os.environ.get('XDG_CONFIG_HOME',
+                                   '~/.config')
+                )
             os.makedirs(configdir, exist_ok=True)
             self._path = os.path.join(configdir, 'pykbg.ini')
 
@@ -145,12 +148,15 @@ class Config:
         self._config.read(self._path)
 
     def get_email(self):
+        """Get configured email."""
         return self._config['Authentication']['email']
 
     def get_favorite_store(self):
+        """Get configured favorite store."""
         return self._config['Stores']['favorite']
 
     def get_password(self):
+        """Get configured password."""
         return self._config['Authentication']['password']
 
 
@@ -176,7 +182,7 @@ class UnauthenticatedKbg:
 
         if self._token:
             kwargs["headers"].setdefault("Authorization",
-                                         "Bearer %s" % self._token)
+                                         f"Bearer {self._token}")
 
         r = requests.request(**kwargs)
         r.raise_for_status()
@@ -186,21 +192,15 @@ class UnauthenticatedKbg:
         return self._request_json(path, data=json.dumps(data))
 
     def logged_in(self):
-        """
-        Return True if this connection has been successfully initiated.
-        """
+        """Return True if this connection has been successfully initiated."""
         return self._token is not None
 
     def get_order_statuses(self):
-        """
-        Return a list of dicts representing the possible statuses of an order.
-        """
+        """Return a list of dicts representing the possible statuses of an order."""
         return _ORDER_STATUSES
 
     def get_stores(self):
-        """
-        Return a list of dicts representing the different stores.
-        """
+        """Return a list of dicts representing the different stores."""
         # don't be confused by the name here: these are stores, not locales.
         # The website is French-only.
         return self._request_json("/locales")["locales"]
@@ -302,9 +302,8 @@ class UnauthenticatedKbg:
 
 
 class Kbg(UnauthenticatedKbg):
-    """
-    Represent a connection to Kelbongoo’s website.
-    """
+    """Represent a connection to Kelbongoo’s website."""
+
     def __init__(self, email: str, password: str):
         super().__init__()
         self._login(email, password)
@@ -318,15 +317,14 @@ class Kbg(UnauthenticatedKbg):
 
     @classmethod
     def from_config(cls, config=None):
+        """Build a client from a config object."""
         if config is None:
             config = Config()
 
         return cls(config.get_email(), config.get_password())
 
     def get_customer_information(self):
-        """
-        Return information about the logged-in customer.
-        """
+        """Return information about the logged-in customer."""
         return self._request_json("/api/consumer")["consumer"]
 
     def get_customer_orders(self, page=1):
@@ -354,7 +352,7 @@ class Kbg(UnauthenticatedKbg):
 
         next_page = None
         if orders:
-            current_count = 10 * (page-1) + len(orders)
+            current_count = 10 * (page - 1) + len(orders)
             if current_count < resp["count"]:
                 next_page = page + 1
 

@@ -2,7 +2,7 @@
 
 ## 0.1.0 (unreleased)
 
-* Drop support for Python 3.6
+* Drop support for Python 3.5, 3.6
 * Use `uv` to manage the project
 
 ## 0.0.5 (2020/04/21)
