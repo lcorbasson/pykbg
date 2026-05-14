@@ -29,6 +29,7 @@ setup(
     ],
     extra_require={
         'dev': ['responses'],
+        'examples': ['more_itertools'],
     },
     classifiers=[
         'Environment :: Console',
