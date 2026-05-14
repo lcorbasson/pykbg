@@ -26,7 +26,7 @@ consumer ([short food supply chain][sfsc]).
 pip3 install kbg
 ```
 
-This requires Python ≥3.5.
+This requires Python ≥3.7.
 
 ## Usage
 Use the `Kbg` class to initiate a connection:
@@ -116,85 +116,7 @@ from kbg import Kbg
 k = Kbg("your@email.com", "yourpassword")
 ```
 
-#### Compute your total spending
-```python3
-total_spent = 0
-
-for order in k.get_all_customer_orders():
-    for product in order["products"]:
-        total_spent += product["consumer_price"]
-
-# get a price in euros rather than cents
-total_spent /= 100
-
-print("You spent a total of %.2f€ at Kelbongoo!" % total_spent)
-```
-
-#### Print your most-bought products
-```python3
-from collections import Counter
-
-my_store = "BOR"
-
-top_products = Counter()
-top_producers = Counter()
-store_products = k.get_store_offer_dicts(my_store)["products"]
-
-for order in k.get_all_customer_orders():
-    for product in order["products"]:
-        product_id = product["id"]
-        if product_id in store_products:
-            product = store_products[product_id]
-            top_products[product["product_name"]] += 1
-            top_producers[product["producer_name"]] += 1
-
-print("Top products:")
-for product, n in top_products.most_common(5):
-    print("%3d - %s" % (n, product))
-
-print("\nTop producers:")
-for producer, n in top_producers.most_common(5):
-    print("%3d - %s" % (n, producer))
-```
-
-#### Find your beers coverage
-```python3
-my_store = "BOR"
-
-offer = k.get_store_offer(my_store)
-
-# Get the id of the family 'Bières' ("Beers")
-beer_family_id = None
-for family in offer["families"]:
-    if family["name"] == "Bières":
-        beer_family_id = family["id"]
-        break
-else:
-    raise Exception("Can't find the beer family! :(")
-
-# Collect all products in that family
-beers = {}
-for product in offer["products"]:
-    if product["family_id"] == beer_family_id:
-        beers[product["id"]] = "%-40s (%s)" % (
-                product["product_name"], product["producer_name"])
-
-known_beers = set()
-
-# Collect all *bought* products in that family
-for order in k.get_all_customer_orders():
-    for product in order["products"]:
-        product_id = product["id"]
-        if product_id in beers:
-            known_beers.add(product_id)
-
-print("You have tasted %d beers out of %d." % (len(known_beers), len(beers)))
-if len(known_beers) != len(beers):
-    print("Other beers you might want to try:")
-    for beer_id, beer in beers.items():
-        if beer_id not in known_beers:
-            print("*", beer)
-```
+See `examples/` for more examples.
 
 ## Compatibility
 This library uses undocumented API endpoints, so it may break at any time.

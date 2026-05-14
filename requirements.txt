@@ -1,8 +1,0 @@
-certifi>=2019.6.16
-chardet>=3.0.4
-idna>=2.8
-pyxdg>=0.28; os_name=='posix'
-requests>=2.22.0
-responses>=0.10.6
-six>=1.12.0
-urllib3>=1.25.3

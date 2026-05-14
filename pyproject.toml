@@ -1,0 +1,62 @@
+[project]
+name = "pykbg"
+version = "0.0.1"
+authors = [{ name = "Baptiste Fontaine", email = "b@ptistefontaine.fr" }]
+requires-python = ">=3.7,<3.15"
+description = "Python wrapper for the Kelbongoo website"
+license = "MIT"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "requests>=2.22.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/bfontaine/pykbg"
+
+[dependency-groups]
+dev = [
+    "mypy>=1,<2",
+    "responses>=0.10.6",
+    "types-requests",
+    "pytest>=7,<10",
+    "ruff>=0.15.5",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.uv.build-backend]
+module-name = ["kbg"]
+module-root = ""
+source-include = ["kbg/py.typed"]
+
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+target-version = "py37"
+[tool.ruff.lint]
+select = [
+    "D", "PERF", "W", "F", "UP",
+    "A", "ASYNC", "B", "C4", "PIE800", "PT", "SIM", "SLOT", "YTT",
+
+    "PLE", "FURB", "PLC0207",
+]
+ignore = [
+    "D104", # "Missing docstring in public package"
+    "D107", # "Missing docstring in `__init__`"
+    "D205", # "1 blank line required between summary line and description",
+    "D212",
+    "D400", # "First line should end with a period"
+    "D401", # "First line of docstring should be in imperative mood"
+    "D415", # "First line should end with a period, question mark, or exclamation point"
+
+    "E501", # line too long
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["D"]
+"conftest.py" = ["D"]

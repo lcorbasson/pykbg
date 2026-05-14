@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: MIT
 
-from more_itertools import unique_everseen
 from kbg import Config, Kbg
 
 # Load the config file
